@@ -27,14 +27,6 @@ public class UserRestControllerV1 {
 				.defaultIfEmpty(ResponseEntity.notFound().build());
 	}
 	
-	/*@GetMapping("/{id}")
-	public Mono<ResponseEntity<UserDto>> getUserById(@PathVariable("id") Long id){
-		return userService.getById(id)
-				.map(UserMapper2::toUserDto)
-				.map(ResponseEntity::ok)
-				.defaultIfEmpty(ResponseEntity.notFound().build());
-	}*/
-	
 	@GetMapping("/by-username/{username}")
 	public Mono<ResponseEntity<UserDto>> getUserByUsername(@PathVariable("username") String username){
 		return userService.getByUsername(username)
@@ -43,25 +35,11 @@ public class UserRestControllerV1 {
 				.defaultIfEmpty(ResponseEntity.notFound().build());
 	}
 	
-	/*@GetMapping("/by-username/{username}")
-	public Mono<ResponseEntity<UserDto>> getUserByUsername(@PathVariable("username") String username){
-		return userService.getByUsername(username)
-				.map(UserMapper2::toUserDto)
-				.map(ResponseEntity::ok)
-				.defaultIfEmpty(ResponseEntity.notFound().build());
-	}*/
-	
 	@GetMapping
 	public Flux<UserDto> getAllUsers(){
 		return userService.getAll()
 				.map(userMapper::map);
 	}
-	
-	/*@GetMapping
-	public Flux<UserDto> getAllUsers(){
-		return userService.getAll()
-				.map(UserMapper2::toUserDto);
-	}*/
 	
 	@PostMapping
 	public Mono<ResponseEntity<UserDto>> saveUser(@Valid @RequestBody UserDto userDto){
@@ -70,14 +48,6 @@ public class UserRestControllerV1 {
 				.map(userMapper::map)
 				.map(savedUser -> ResponseEntity.status(HttpStatus.CREATED).body(savedUser));
 	}
-	
-	/*@PostMapping
-	public Mono<ResponseEntity<UserDto>> saveUser(@Valid @RequestBody UserDto userDto){
-		User user = UserMapper2.toUser(userDto);
-		return userService.save(user)
-				.map(UserMapper2::toUserDto)
-				.map(savedUser -> ResponseEntity.status(HttpStatus.CREATED).body(savedUser));
-	}*/
 	
 	@PutMapping("/{id}")
 	public Mono<ResponseEntity<UserDto>> updateUser(@PathVariable("id") Long id, @Valid @RequestBody UserDto userDto){
@@ -91,19 +61,6 @@ public class UserRestControllerV1 {
 				})
 				.defaultIfEmpty(ResponseEntity.notFound().build());
 	}
-	
-	/*@PutMapping("/{id}")
-	public Mono<ResponseEntity<UserDto>> updateUser(@PathVariable("id") Long id, @Valid @RequestBody UserDto userDto){
-		return userService.getById(id)
-				.flatMap(existingUser -> {
-					User userToUpdate = UserMapper2.toUser(userDto);
-					userToUpdate.setId(existingUser.getId());
-					return userService.update(userToUpdate)
-							.map(UserMapper2::toUserDto)
-							.map(ResponseEntity::ok);
-				})
-				.defaultIfEmpty(ResponseEntity.notFound().build());
-	}*/
 	
 	@DeleteMapping("/{id}")
 	public Mono<ResponseEntity<Void>> deleteUserById(@PathVariable("id") Long id) {

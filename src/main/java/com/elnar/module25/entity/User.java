@@ -31,6 +31,6 @@ public class User {
 	
 	@ToString.Include(name = "password")
 	private String maskPassword() {
-		return "**********";
+		return "***********";
 	}
 }

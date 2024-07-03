@@ -29,13 +29,6 @@ public class AuthRestControllerV1 {
 				.map(userMapper::map);
 	}
 	
-	/*@PostMapping("/register")
-	public Mono<UserDto> register(@RequestBody UserDto dto){
-		User user = UserMapper2.toUser(dto);
-		return userService.registerUser(user)
-				.map(UserMapper2::toUserDto);
-	}*/
-	
 	@PostMapping("/login")
 	public Mono<AuthResponseDto> login(@RequestBody AuthRequestDto dto){
 		return securityService.authenticate(dto.getUsername(), dto.getPassword())
@@ -56,12 +49,4 @@ public class AuthRestControllerV1 {
 		return userService.getById(principal.getId())
 				.map(userMapper::map);
 	}
-	
-	/*@GetMapping("/info")
-	public Mono<UserDto> getUserInfo(Authentication authentication){
-		CustomPrincipal principal = (CustomPrincipal) authentication.getPrincipal();
-		
-		return userService.getById(principal.getId())
-				.map(UserMapper2::toUserDto);
-	}*/
 }

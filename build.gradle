@@ -32,16 +32,16 @@ dependencies {
 
 	implementation "com.google.code.findbugs:jsr305:$googleFindBugsVersion"
 
+	implementation 'org.projectlombok:lombok:1.18.18'
+	compileOnly('org.projectlombok:lombok')
+	annotationProcessor "org.projectlombok:lombok"
+
 	implementation "org.mapstruct:mapstruct:$mapStructVersion"
 	annotationProcessor "org.mapstruct:mapstruct-processor:$mapStructVersion"
 
 	implementation "io.jsonwebtoken:jjwt:$jsonWebTokenVersion"
 
 	implementation "javax.xml.bind:jaxb-api:$jaxbApiVersion"
-
-	implementation 'org.projectlombok:lombok:1.18.18'
-	compileOnly('org.projectlombok:lombok')
-	annotationProcessor "org.projectlombok:lombok"
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
