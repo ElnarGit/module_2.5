@@ -1,6 +1,5 @@
 package com.elnar.module25.security;
 
-
 import com.elnar.module25.entity.Status;
 import com.elnar.module25.entity.User;
 import com.elnar.module25.exception.AuthException;
@@ -19,8 +18,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
-
 
 @Component
 @RequiredArgsConstructor

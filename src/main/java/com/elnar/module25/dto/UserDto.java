@@ -8,8 +8,6 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class UserDto {
@@ -20,8 +18,4 @@ public class UserDto {
 	private String password;
 	private UserRole role;
 	private Status status;
-	private String firstName;
-	private String lastName;
-	private LocalDateTime createdAt;
-	private LocalDateTime updatedAt;
 }

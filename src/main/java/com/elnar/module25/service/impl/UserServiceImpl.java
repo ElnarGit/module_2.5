@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDateTime;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -65,15 +63,10 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	public Mono<User> registerUser(User user) {
-		log.debug("Registering user: {}", user);
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		log.debug("Encoded password for user: {}", user.getPassword());
 		return userRepository.save(user.toBuilder()
 						.password(passwordEncoder.encode(user.getPassword()))
 						.role(UserRole.USER)
 						.status(Status.ACTIVE)
-						.createdAt(LocalDateTime.now())
-						.updatedAt(LocalDateTime.now())
 				        .build()
 		).doOnSuccess(u ->
 				log.info("IN registerUser - user {} created", u));

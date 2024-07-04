@@ -1,6 +1,5 @@
 package com.elnar.module25.service.impl;
 
-
 import com.elnar.module25.entity.Event;
 import com.elnar.module25.repository.EventRepository;
 import com.elnar.module25.service.EventService;

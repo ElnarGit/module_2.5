@@ -3,11 +3,7 @@ create table users(
     username varchar(255) not null unique,
     password varchar(255) not null,
     role varchar(32) not null,
-    first_name VARCHAR(64)   NOT NULL,
-    last_name  VARCHAR(64)   NOT NULL,
-    status varchar(32) not null,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP
+    status varchar(32) not null
 );
 
 create table files(
