@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version "$springbootVersion"
 	id 'io.spring.dependency-management' version "$springDependencyManagmentVersion"
+	id 'com.diffplug.spotless' version "$spotlessVersion"
 }
 
 group = 'com.elnar'
@@ -46,6 +47,12 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+spotless {
+	java {
+		googleJavaFormat()
+	}
 }
 
 tasks.named('test') {

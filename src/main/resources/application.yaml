@@ -26,4 +26,10 @@ jwt:
   expiration : 3600
   issuer : Elnar
 
+logging:
+  level:
+    root: INFO  # Уровень корневого логгера
+    com.elnar.module25: DEBUG  # Уровень логирования для пакета
+
+
 

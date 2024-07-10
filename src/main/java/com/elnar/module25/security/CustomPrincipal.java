@@ -1,15 +1,14 @@
 package com.elnar.module25.security;
 
+import java.security.Principal;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.security.Principal;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomPrincipal implements Principal {
-	private Long id;
-	private String name;
+  private Long id;
+  private String name;
 }

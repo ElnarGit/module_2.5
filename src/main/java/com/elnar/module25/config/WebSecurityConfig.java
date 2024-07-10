@@ -19,41 +19,55 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @Configuration
-@EnableReactiveMethodSecurity
+@EnableReactiveMethodSecurity()
 public class WebSecurityConfig {
-	
-	@Value("${jwt.secret}")
-	private String secret;
-	
-	private final String [] publicRoutes = {"/api/v1/auth/register", "/api/v1/auth/login"};
-	
-	@Bean
-	public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http, AuthenticationManager authenticationManager){
-		return http
-				.csrf(ServerHttpSecurity.CsrfSpec::disable)
-				.authorizeExchange(exchange -> exchange
-						.pathMatchers(HttpMethod.OPTIONS).permitAll()
-						.pathMatchers(publicRoutes).permitAll()
-						.anyExchange().authenticated()
-				)
-				.exceptionHandling(handling -> handling
-						.authenticationEntryPoint((swe, e) -> {
-							log.error("IN securityFilterChain - unauthorized error {}", e.getMessage());
-							return Mono.fromRunnable(() -> swe.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED));
-		})
-						.accessDeniedHandler((swe, e) -> {
-							log.error("IN securityFilterChain - access denied error {}", e.getMessage());
-							return Mono.fromRunnable(() -> swe.getResponse().setStatusCode(HttpStatus.FORBIDDEN));
-						}))
-				.addFilterAt(bearerAuthenticationFilter(authenticationManager), SecurityWebFiltersOrder.AUTHORIZATION)
-				.build();
-	}
-	
-	private AuthenticationWebFilter bearerAuthenticationFilter(AuthenticationManager authenticationManager){
-		AuthenticationWebFilter bearerAuthenticationFilter = new AuthenticationWebFilter(authenticationManager);
-		bearerAuthenticationFilter.setServerAuthenticationConverter(new BearerTokenServerAuthenticationConverter(new JwtHandler(secret)));
-		bearerAuthenticationFilter.setRequiresAuthenticationMatcher(ServerWebExchangeMatchers.pathMatchers("/**"));
-		
-		return bearerAuthenticationFilter;
-	}
+
+  @Value("${jwt.secret}")
+  private String secret;
+
+  private final String[] publicRoutes = {"/api/v1/auth/register", "/api/v1/auth/login"};
+
+  @Bean
+  public SecurityWebFilterChain securityWebFilterChain(
+      ServerHttpSecurity http, AuthenticationManager authenticationManager) {
+    return http.csrf(ServerHttpSecurity.CsrfSpec::disable)
+        .authorizeExchange(
+            exchange ->
+                exchange
+                    .pathMatchers(HttpMethod.OPTIONS)
+                    .permitAll()
+                    .pathMatchers(publicRoutes)
+                    .permitAll()
+                    .anyExchange()
+                    .authenticated())
+        .exceptionHandling(
+            handling ->
+                handling
+                    .authenticationEntryPoint(
+                        (swe, e) -> {
+                          log.error(
+                              "IN securityFilterChain - unauthorized error {}", e.getMessage());
+                          return Mono.fromRunnable(
+                              () -> swe.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED));
+                        })
+                    .accessDeniedHandler(
+                        (swe, e) -> {
+                          log.error(
+                              "IN securityFilterChain - access denied error {}", e.getMessage());
+                          return Mono.fromRunnable(
+                              () -> swe.getResponse().setStatusCode(HttpStatus.FORBIDDEN));
+                        }))
+        .addFilterAt(
+            bearerAuthenticationFilter(authenticationManager),
+            SecurityWebFiltersOrder.AUTHORIZATION)
+        .build();
+  }
+
+  private AuthenticationWebFilter bearerAuthenticationFilter(AuthenticationManager authenticationManager) {
+    AuthenticationWebFilter bearerAuthenticationFilter = new AuthenticationWebFilter(authenticationManager);
+    bearerAuthenticationFilter.setServerAuthenticationConverter(new BearerTokenServerAuthenticationConverter(new JwtHandler(secret)));
+    bearerAuthenticationFilter.setRequiresAuthenticationMatcher(ServerWebExchangeMatchers.pathMatchers("/**"));
+
+    return bearerAuthenticationFilter;
+  }
 }
