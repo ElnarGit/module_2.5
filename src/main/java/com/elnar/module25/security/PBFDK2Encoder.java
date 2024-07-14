@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PBFDK2Encoder implements PasswordEncoder {
-  
+
   @Value("${jwt.password.encoder.secret}")
   private String secret;
 

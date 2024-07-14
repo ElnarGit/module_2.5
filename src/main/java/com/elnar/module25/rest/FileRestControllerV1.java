@@ -7,7 +7,6 @@ import com.elnar.module25.security.CustomPrincipal;
 import com.elnar.module25.service.FileService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
@@ -89,8 +88,6 @@ public class FileRestControllerV1 {
         .flatMap(file -> fileService.uploadFile(file, userId))
         .map(ResponseEntity::ok)
         .onErrorResume(
-            e -> {
-              return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null));
-            });
+            e -> Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)));
   }
 }

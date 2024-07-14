@@ -3,6 +3,7 @@ package com.elnar.module25.service.impl;
 import com.elnar.module25.entity.Event;
 import com.elnar.module25.entity.File;
 import com.elnar.module25.entity.Status;
+import com.elnar.module25.entity.User;
 import com.elnar.module25.exception.NotFoundException;
 import com.elnar.module25.repository.EventRepository;
 import com.elnar.module25.repository.FileRepository;
@@ -70,69 +71,61 @@ public class FileServiceImpl implements FileService {
 
   @Override
   public Mono<File> uploadFile(FilePart filePart, Long userId) {
-    return userRepository
-        .findById(userId)
-        .switchIfEmpty(
-            Mono.error(
-                new NotFoundException("User not found with id: " + userId, "USER_NOT_FOUND")))
+    return validateUser(userId)
         .flatMap(
             user -> {
               String fileName = UUID.randomUUID() + "_" + filePart.filename();
               Path uploadPath = Paths.get("uploads");
               Path filePath = uploadPath.resolve(fileName);
 
-              // Проверка и создание директории, если она отсутствует
-              try {
-                if (!Files.exists(uploadPath)) {
-                  Files.createDirectories(uploadPath);
-                }
-              } catch (IOException e) {
-                return Mono.error(
-                    new RuntimeException("Не удалось создать директорию для загрузки файлов", e));
-              }
-
-              return filePart
-                  .transferTo(filePath)
+              return createDirectoryIfNotExists(uploadPath)
+                  .then(filePart.transferTo(filePath))
                   .doOnSuccess(unused -> log.debug("File transferred to path: {}", filePath))
                   .doOnError(
                       error -> log.error("Error transferring file to path: {}", filePath, error))
-                  .then(
-                      Mono.defer(
-                          () -> {
-                            File fileEntity =
-                                File.builder()
-                                    .location(filePath.toString())
-                                    .status(Status.ACTIVE)
-                                    .build();
-
-                            return fileRepository
-                                .save(fileEntity)
-                                .doOnNext(
-                                    savedFile ->
-                                        log.debug("File saved with ID: {}", savedFile.getId()))
-                                .doOnError(error -> log.error("Error saving file entity", error))
-                                .flatMap(
-                                    savedFile -> {
-                                      Event event =
-                                          Event.builder()
-                                              .userId(user.getId())
-                                              .fileId(savedFile.getId())
-                                              .status(Status.ACTIVE)
-                                              .build();
-
-                                      return eventRepository
-                                          .save(event)
-                                          .doOnSuccess(
-                                              savedEvent ->
-                                                  log.debug(
-                                                      "Event saved with ID: {}",
-                                                      savedEvent.getId()))
-                                          .doOnError(
-                                              error ->
-                                                  log.error("Error saving event entity", error))
-                                          .thenReturn(savedFile);
-                                    });
-                          }));
+                  .then(createFile(filePath.toString()))
+                  .flatMap(
+                      savedFile ->
+                          createEvent(user.getId(), savedFile.getId()).thenReturn(savedFile));
             });
+  }
+
+  private Mono<User> validateUser(Long userId) {
+    return userRepository
+        .findById(userId)
+        .switchIfEmpty(
+            Mono.error(
+                new NotFoundException("User not found with id: " + userId, "USER_NOT_FOUND")));
+  }
+
+  private Mono<Void> createDirectoryIfNotExists(Path uploadPath) {
+    return Mono.fromRunnable(
+        () -> {
+          try {
+            if (!Files.exists(uploadPath)) {
+              Files.createDirectories(uploadPath);
+            }
+          } catch (IOException e) {
+            throw new RuntimeException("Failed to create directory for file upload", e);
+          }
+        });
+  }
+
+  private Mono<File> createFile(String filePath) {
+    File file = File.builder().location(filePath).status(Status.ACTIVE).build();
+
+    return fileRepository
+        .save(file)
+        .doOnNext(savedFile -> log.debug("File saved with ID: {}", savedFile.getId()))
+        .doOnError(error -> log.error("Error saving file entity", error));
+  }
+
+  private Mono<Event> createEvent(Long userId, Long fileId) {
+    Event event = Event.builder().userId(userId).fileId(fileId).status(Status.ACTIVE).build();
+
+    return eventRepository
+        .save(event)
+        .doOnNext(savedEvent -> log.debug("Event saved with ID: {}", savedEvent.getId()))
+        .doOnError(error -> log.error("Error saving event entity", error));
   }
 }

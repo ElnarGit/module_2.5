@@ -55,7 +55,15 @@ public class UserServiceImpl implements UserService {
   @Override
   public Mono<User> update(User user) {
     return userRepository
-        .save(user)
+        .findById(user.getId())
+        .flatMap(
+            existingUser -> {
+              // Кодируем пароль только если он изменился
+              if (!existingUser.getPassword().equals(user.getPassword())) {
+                user.setPassword(passwordEncoder.encode(user.getPassword()));
+              }
+              return userRepository.save(user);
+            })
         .doOnNext(updatedUser -> log.debug("Updated user with id: {}", updatedUser.getId()))
         .doOnError(error -> log.error("Error updating user", error));
   }
@@ -77,6 +85,7 @@ public class UserServiceImpl implements UserService {
                 .role(UserRole.USER)
                 .status(Status.ACTIVE)
                 .build())
-        .doOnSuccess(u -> log.info("IN registerUser - user {} created", u));
+        .doOnSuccess(u -> log.info("IN registerUser - user {} created", u))
+        .doOnError(error -> log.error("Error registering user", error));
   }
 }

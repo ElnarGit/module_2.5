@@ -13,8 +13,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class Event {
-  @Id
-  private Long id;
+  @Id private Long id;
   private Long userId;
   private Long fileId;
   private Status status;

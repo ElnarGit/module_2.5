@@ -13,8 +13,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class File {
-  @Id
-  private Long id;
+  @Id private Long id;
   private String location;
   private Status status;
 }
